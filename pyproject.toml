@@ -1,0 +1,9 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "chunky-logs"
+version = "1.0.0"
+description = "Library to provide an index, chunked, logger for writing and reading larger amounts of data to disk"
+readme = "README.md"
+requires-pythom = ">=3.9"
