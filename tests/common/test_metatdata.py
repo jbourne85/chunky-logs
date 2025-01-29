@@ -42,4 +42,4 @@ def test_load_metadata_failed_missing_file(patch_os_path_exists):
     patch_os_path_exists.return_value = False
 
     with pytest.raises(MetaDataError):
-        test_metadata = MetaData('chunkfile')
+        MetaData('chunkfile')
