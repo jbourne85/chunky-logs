@@ -7,7 +7,6 @@ from chunky_logs.common.metadata import MetaData, MetaDataError
 def test_load_metadata_success(patch_os_path_exists):
     temp_filename = tempfile.NamedTemporaryFile().name
     chunk_filename = f"{temp_filename}.chunk"
-    metadata_filename = f"{temp_filename}.metadata"
 
     patch_os_path_exists.return_value = True
     mock_metadata_file = mock.mock_open()
@@ -24,7 +23,7 @@ def test_load_metadata_success(patch_os_path_exists):
     ]
 
     with mock.patch('builtins.open', mock_metadata_file):
-        test_metadata = MetaData(metadata_filename)
+        test_metadata = MetaData(chunk_filename)
 
         # Assert the default metadata
         assert test_metadata.chunk_filename == chunk_filename
