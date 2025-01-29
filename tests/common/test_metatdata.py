@@ -1,6 +1,7 @@
 import tempfile
 from unittest import mock
-from chunky_logs.common.metadata import MetaData
+import pytest
+from chunky_logs.common.metadata import MetaData, MetaDataError
 
 @mock.patch('os.path.exists')
 def test_load_metadata_success(patch_os_path_exists):
@@ -36,3 +37,10 @@ def test_load_metadata_success(patch_os_path_exists):
         # Assert the extra custom metadata
         assert test_metadata.get_value('data.start') == '1652334530'
         assert test_metadata.get_value('data.end') == '1661424345'
+
+@mock.patch('os.path.exists')
+def test_load_metadata_failed_missing_file(patch_os_path_exists):
+    patch_os_path_exists.return_value = False
+
+    with pytest.raises(MetaDataError):
+        test_metadata = MetaData('chunkfile')
