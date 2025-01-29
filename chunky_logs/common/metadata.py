@@ -5,6 +5,9 @@ class MetaDataError(RuntimeError):
     pass
 
 class MetaData:
+    """
+    This class represents the metadata associated with a Chunk file, it knows how to load them from disk
+    """
     CHUNK_FILENAME_KEY = 'chunk.file'
     TIME_CREATE_KEY = 'time.create'
     TIME_UPDATE_KEY = 'time.update'
@@ -50,11 +53,21 @@ class MetaData:
         return self._metadata[MetaData.CHECKSUM_TYPE_KEY]
 
     def get_value(self, key):
+        """
+        This method gets the current metadata value based on a key value
+        :param key: The metadata key to fetch
+        :return: The matching metadata value on success, raises a MetaDataError on error
+        """
         if key in self._metadata:
             return self._metadata[key]
         raise MetaDataError(f"Unknown metadata key. key={key}")
 
     def _load_metadata(self, chunk_filename):
+        """
+        This method loads the metadata associated with the Chunk filename chunk_filename
+        :param chunk_filename: The associated Chunk file
+        :return: A dict of key, values that represent the metadata on disk
+        """
         metadata_file = f"{os.path.splitext(chunk_filename)[0]}.{MetaData.METADATA_FILE_EXTENSION}"
         metadata = {}
         if os.path.exists(metadata_file):
