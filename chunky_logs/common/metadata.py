@@ -16,7 +16,7 @@ class MetaData:
     CHECKSUM_TYPE_KEY = 'checksum.type'
     METADATA_FILE_EXTENSION = 'metadata'
 
-    def __init__(self, chunk_filename):
+    def __init__(self, chunk_file):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._metadata_keys = [
             MetaData.CHUNK_FILENAME_KEY,
@@ -26,10 +26,15 @@ class MetaData:
             MetaData.CHECKSUM_HASH_KEY,
             MetaData.CHECKSUM_TYPE_KEY
         ]
-        self._metadata = self._load_metadata(chunk_filename)
+        self._metadata_file = f"{os.path.splitext(chunk_file)[0]}.{MetaData.METADATA_FILE_EXTENSION}"
+        self._metadata = self._load_metadata(self._metadata_file)
 
     @property
-    def chunk_filename(self) -> str:
+    def metadata_file(self) -> str:
+        return self._metadata_file
+
+    @property
+    def chunk_file(self) -> str:
         return self._metadata[MetaData.CHUNK_FILENAME_KEY]
 
     @property
@@ -62,13 +67,12 @@ class MetaData:
             return self._metadata[key]
         raise MetaDataError(f"Unknown metadata key. key={key}")
 
-    def _load_metadata(self, chunk_filename):
+    def _load_metadata(self, metadata_file):
         """
-        This method loads the metadata associated with the Chunk filename chunk_filename
-        :param chunk_filename: The associated Chunk file
+        This method loads the metadata from a given metadata file
+        :param metadata_file: The metadata file to load from
         :return: A dict of key, values that represent the metadata on disk
         """
-        metadata_file = f"{os.path.splitext(chunk_filename)[0]}.{MetaData.METADATA_FILE_EXTENSION}"
         metadata = {}
         if os.path.exists(metadata_file):
             self._logger.debug(f"Existing metadata file found. metadata.filename={metadata_file}")
