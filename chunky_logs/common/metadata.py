@@ -61,7 +61,7 @@ class MetaData:
 
     @property
     @_data_key_exception
-    def chunk_file(self) -> str:
+    def chunk_file(self) -> pathlib.Path:
         return self._metadata[MetaData.CHUNK_FILENAME_KEY]['value']
 
     @property
