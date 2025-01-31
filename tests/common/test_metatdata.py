@@ -1,12 +1,13 @@
 import tempfile
 from unittest import mock
+import pathlib
 import pytest
 from chunky_logs.common.metadata import MetaData, MetaDataError, MetaDataKeyError
 
 @mock.patch('os.path.exists')
 def test_load_metadata_success(patch_os_path_exists):
     temp_filename = tempfile.NamedTemporaryFile().name
-    chunk_filename = f"{temp_filename}.chunk"
+    chunk_filename = pathlib.Path(temp_filename).with_suffix('.chunk')
 
     patch_os_path_exists.return_value = True
     mock_metadata_file = mock.mock_open()
@@ -26,8 +27,8 @@ def test_load_metadata_success(patch_os_path_exists):
         test_metadata = MetaData(chunk_filename)
 
         # Assert the default metadata
-        assert test_metadata.metadata_file == f"{temp_filename}.metadata"
-        assert test_metadata.chunk_file == chunk_filename
+        assert test_metadata.metadata_file == pathlib.Path(chunk_filename).with_suffix('.metadata')
+        assert pathlib.Path(test_metadata.chunk_file) == chunk_filename
         assert test_metadata.time_create == 1648829317
         assert test_metadata.time_update == 1648915726
         assert test_metadata.line_count == 1440

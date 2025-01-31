@@ -1,5 +1,6 @@
 import logging
 import os
+import pathlib
 
 class MetaDataError(RuntimeError):
     pass
@@ -17,9 +18,9 @@ class MetaData:
     LINE_COUNT_KEY = 'line.count'
     CHECKSUM_HASH_KEY = 'checksum.hash'
     CHECKSUM_TYPE_KEY = 'checksum.type'
-    METADATA_FILE_EXTENSION = 'metadata'
+    METADATA_FILE_EXTENSION = '.metadata'
 
-    def __init__(self, chunk_file):
+    def __init__(self, chunk_file: pathlib.Path):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._metadata_keys = [
             MetaData.CHUNK_FILENAME_KEY,
@@ -29,7 +30,7 @@ class MetaData:
             MetaData.CHECKSUM_HASH_KEY,
             MetaData.CHECKSUM_TYPE_KEY
         ]
-        self._metadata_file = f"{os.path.splitext(chunk_file)[0]}.{MetaData.METADATA_FILE_EXTENSION}"
+        self._metadata_file = chunk_file.with_suffix(MetaData.METADATA_FILE_EXTENSION)
         self._metadata = self._load_metadata(self._metadata_file)
 
     def _data_key_exception(self):
@@ -41,8 +42,7 @@ class MetaData:
         return _property_exception_f
 
     @property
-    @_data_key_exception
-    def metadata_file(self) -> str:
+    def metadata_file(self) -> pathlib.Path:
         return self._metadata_file
 
     @property
