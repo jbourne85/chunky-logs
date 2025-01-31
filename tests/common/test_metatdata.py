@@ -2,32 +2,55 @@ import tempfile
 from unittest import mock
 import pathlib
 import pytest
-from chunky_logs.common.metadata import MetaData, MetaDataError, MetaDataKeyError
+from chunky_logs.common.metadata import MetaData, MetaDataError, MetaDataSourceError, MetaDataKeyError
 
 @mock.patch('os.path.exists')
-def test_load_metadata_success(patch_os_path_exists):
+@mock.patch('builtins.open')
+def test_load_metadata_success(patch_builtins_open, patch_os_path_exists):
     temp_filename = tempfile.NamedTemporaryFile().name
     chunk_filename = pathlib.Path(temp_filename).with_suffix('.chunk')
 
     patch_os_path_exists.return_value = True
-    mock_metadata_file = mock.mock_open()
-    mock_metadata_file.return_value.readlines.return_value = [
-        f"chunk.file ={chunk_filename}\n",
-        f"time.create = 1648829317\n",
-        f"time.update = 1648915726\n",
-        f"line.count=1440\n",
-        f"checksum.hash=xliyudtn3e",
-        f"checksum.type=md5",
-        f"data.start = 1652334530\n",
-        f"data.end = 1661424345\n",
-        "\n",
-    ]
+    mock_data = {
+        'chunk.file': {
+            'value': chunk_filename,
+            'type': 'path'
+        },
+        'time.create': {
+            'value': '1648829317',
+            'type': 'int'
+        },
+        'time.update': {
+            'value': '1648915726',
+            'type': 'int'
+        },
+        'line.count': {
+            'value': '1440',
+            'type': 'int'
+        },
+        'checksum.hash': {
+            'value': 'xliyudtn3e',
+            'type': 'str'
+        },
+        'checksum.type': {
+            'value': 'md5',
+            'type': 'str'
+        },
+        'data.start': {
+            'value': '1652334530',
+            'type': 'int'
+        },
+        'data.end': {
+            'value': '1661424345',
+            'type': 'int'
+        }
+    }
 
-    with mock.patch('builtins.open', mock_metadata_file):
+    with mock.patch("json.loads", return_value=mock_data):
         test_metadata = MetaData(chunk_filename)
 
         # Assert the default metadata
-        assert test_metadata.metadata_file == pathlib.Path(chunk_filename).with_suffix('.metadata')
+        assert test_metadata.metadata_file == pathlib.Path(chunk_filename).with_suffix('.metadata.json')
         assert pathlib.Path(test_metadata.chunk_file) == chunk_filename
         assert test_metadata.time_create == 1648829317
         assert test_metadata.time_update == 1648915726
@@ -36,19 +59,19 @@ def test_load_metadata_success(patch_os_path_exists):
         assert test_metadata.checksum_type == "md5"
 
         # Assert the extra custom metadata
-        assert test_metadata.get_value('data.start') == '1652334530'
-        assert test_metadata.get_value('data.end') == '1661424345'
+        assert test_metadata.get_value('data.start') == 1652334530
+        assert test_metadata.get_value('data.end') == 1661424345
 
 @mock.patch('os.path.exists')
 def test_load_metadata_failed_missing_file(patch_os_path_exists):
     patch_os_path_exists.return_value = False
 
-    with pytest.raises(MetaDataError):
-        MetaData('chunkfile')
+    with pytest.raises(MetaDataSourceError):
+        MetaData(pathlib.Path('chunkfile'))
 
 def test_metadata_key_exceptions():
     with mock.patch.object(MetaData, '_load_metadata', return_value={}):
-        test_metadata = MetaData('test_chunk_file.dat')
+        test_metadata = MetaData(pathlib.Path('test_chunk_file.dat'))
 
         with pytest.raises(MetaDataKeyError):
             test_metadata.chunk_file
@@ -67,3 +90,6 @@ def test_metadata_key_exceptions():
 
         with pytest.raises(MetaDataKeyError):
             test_metadata.checksum_type
+
+        with pytest.raises(MetaDataKeyError):
+            test_metadata.get_value('nonexistent-key')
