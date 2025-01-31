@@ -59,8 +59,8 @@ def test_load_metadata_success(patch_builtins_open, patch_os_path_exists):
         assert test_metadata.checksum_type == "md5"
 
         # Assert the extra custom metadata
-        assert test_metadata.get_value('data.start') == 1652334530
-        assert test_metadata.get_value('data.end') == 1661424345
+        assert test_metadata['data.start'] == 1652334530
+        assert test_metadata['data.end'] == 1661424345
 
 @mock.patch('os.path.exists')
 def test_load_metadata_failed_missing_file(patch_os_path_exists):
@@ -92,4 +92,4 @@ def test_metadata_key_exceptions():
             test_metadata.checksum_type
 
         with pytest.raises(MetaDataKeyError):
-            test_metadata.get_value('nonexistent-key')
+            test_metadata['nonexistent-key']

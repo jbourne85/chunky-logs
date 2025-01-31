@@ -55,6 +55,13 @@ class MetaData:
                 raise MetaDataKeyError(f"Metadata non-existent Key: {e}") from None
         return _property_exception_f
 
+    @_data_key_exception
+    def __getitem__(self, key):
+        return self._metadata[key]['value']
+
+    def __contains__(self, key):
+        return key in self._metadata
+
     @property
     def metadata_file(self) -> pathlib.Path:
         return self._metadata_file
@@ -88,15 +95,6 @@ class MetaData:
     @_data_key_exception
     def checksum_type(self) -> str:
         return self._metadata[MetaData.CHECKSUM_TYPE_KEY]['value']
-
-    @_data_key_exception
-    def get_value(self, key):
-        """
-        This method gets the current metadata value based on a key value
-        :param key: The metadata key to fetch
-        :return: The matching metadata value on success
-        """
-        return self._metadata[key]['value']
 
     def _load_metadata(self, metadata_json_file):
         """
