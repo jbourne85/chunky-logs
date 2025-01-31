@@ -50,7 +50,7 @@ def test_load_metadata_success(patch_builtins_open, patch_os_path_exists):
         test_metadata = MetaData(chunk_filename)
 
         # Assert the default metadata
-        assert test_metadata.metadata_file == pathlib.Path(chunk_filename).with_suffix('.metadata.json')
+        assert test_metadata.file == pathlib.Path(chunk_filename).with_suffix('.metadata.json')
         assert pathlib.Path(test_metadata.chunk_file) == chunk_filename
         assert test_metadata.time_create == 1648829317
         assert test_metadata.time_update == 1648915726

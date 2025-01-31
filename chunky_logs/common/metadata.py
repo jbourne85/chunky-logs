@@ -63,7 +63,7 @@ class MetaData:
         return key in self._metadata
 
     @property
-    def metadata_file(self) -> pathlib.Path:
+    def file(self) -> pathlib.Path:
         return self._metadata_file
 
     @property
