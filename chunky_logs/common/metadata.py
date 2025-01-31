@@ -94,7 +94,7 @@ class MetaData:
         """
         This method gets the current metadata value based on a key value
         :param key: The metadata key to fetch
-        :return: The matching metadata value on success, raises a MetaDataError on error
+        :return: The matching metadata value on success
         """
         return self._metadata[key]['value']
 
