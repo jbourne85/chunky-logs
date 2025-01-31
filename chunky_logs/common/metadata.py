@@ -4,6 +4,9 @@ import os
 class MetaDataError(RuntimeError):
     pass
 
+class MetaDataKeyError(KeyError):
+    pass
+
 class MetaData:
     """
     This class represents the metadata associated with a Chunk file, it knows how to load them from disk
@@ -29,31 +32,46 @@ class MetaData:
         self._metadata_file = f"{os.path.splitext(chunk_file)[0]}.{MetaData.METADATA_FILE_EXTENSION}"
         self._metadata = self._load_metadata(self._metadata_file)
 
+    def _data_key_exception(self):
+        def _property_exception_f(*args):
+            try:
+                return self(*args)
+            except KeyError as e:
+                raise MetaDataKeyError(f"Metadata non-existent Key: {e}") from None
+        return _property_exception_f
+
     @property
+    @_data_key_exception
     def metadata_file(self) -> str:
         return self._metadata_file
 
     @property
+    @_data_key_exception
     def chunk_file(self) -> str:
         return self._metadata[MetaData.CHUNK_FILENAME_KEY]
 
     @property
+    @_data_key_exception
     def time_create(self) -> int:
         return int(self._metadata[MetaData.TIME_CREATE_KEY])
 
     @property
+    @_data_key_exception
     def time_update(self) -> int:
         return int(self._metadata[MetaData.TIME_UPDATE_KEY])
 
     @property
+    @_data_key_exception
     def line_count(self) -> int:
         return int(self._metadata[MetaData.LINE_COUNT_KEY])
 
     @property
+    @_data_key_exception
     def checksum_hash(self) -> str:
         return self._metadata[MetaData.CHECKSUM_HASH_KEY]
 
     @property
+    @_data_key_exception
     def checksum_type(self) -> str:
         return self._metadata[MetaData.CHECKSUM_TYPE_KEY]
 

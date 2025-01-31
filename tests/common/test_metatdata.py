@@ -1,7 +1,7 @@
 import tempfile
 from unittest import mock
 import pytest
-from chunky_logs.common.metadata import MetaData, MetaDataError
+from chunky_logs.common.metadata import MetaData, MetaDataError, MetaDataKeyError
 
 @mock.patch('os.path.exists')
 def test_load_metadata_success(patch_os_path_exists):
@@ -44,3 +44,25 @@ def test_load_metadata_failed_missing_file(patch_os_path_exists):
 
     with pytest.raises(MetaDataError):
         MetaData('chunkfile')
+
+def test_metadata_key_exceptions():
+    with mock.patch.object(MetaData, '_load_metadata', return_value={}):
+        test_metadata = MetaData('test_chunk_file.dat')
+
+        with pytest.raises(MetaDataKeyError):
+            test_metadata.chunk_file
+
+        with pytest.raises(MetaDataKeyError):
+            test_metadata.time_create
+
+        with pytest.raises(MetaDataKeyError):
+            test_metadata.time_update
+
+        with pytest.raises(MetaDataKeyError):
+            test_metadata.line_count
+
+        with pytest.raises(MetaDataKeyError):
+            test_metadata.checksum_hash
+
+        with pytest.raises(MetaDataKeyError):
+            test_metadata.checksum_type
