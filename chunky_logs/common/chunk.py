@@ -4,6 +4,9 @@ import pathlib
 from zipfile import ZipFile
 from chunky_logs.common.metadata import MetaData
 
+class ChunkManagedFileError(OSError):
+    pass
+
 class Chunk:
     CHUNK_FILE_EXTENSION = '.chunk'
     def __init__(self, group_path: pathlib.Path, chunk_name: pathlib.Path):
@@ -23,9 +26,11 @@ class Chunk:
         This deletes all the managed files associated with this Chunk
         """
         for file in self._managed_files:
-            if os.path.exists(file):
+            try:
                 os.remove(file)
                 self._logger.debug(f"Removed Chunk managed file. file={file}")
+            except OSError as e:
+                raise ChunkManagedFileError(f"Unable to remove managed file: {e}") from None
 
     def archive(self):
         """
