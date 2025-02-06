@@ -63,6 +63,10 @@ class MetaData:
         return key in self._metadata
 
     @property
+    def checksum(self) -> str:
+        return file_md5sum(self.file)
+
+    @property
     def file(self) -> pathlib.Path:
         return self._metadata_file
 
