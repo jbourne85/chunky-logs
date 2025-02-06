@@ -4,11 +4,8 @@ import pathlib
 import pytest
 from chunky_logs.common.chunk import Chunk
 
-@mock.patch('os.path.exists')
 @mock.patch("chunky_logs.common.chunk.MetaData")
-def test_constructor(mock_metadata, patch_os_path_exists):
-    patch_os_path_exists.return_value = True
-
+def test_constructor(mock_metadata):
     base_path = pathlib.Path(tempfile.NamedTemporaryFile().name)
     chunk_name = pathlib.Path('chunk_1')
 
@@ -23,4 +20,3 @@ def test_constructor(mock_metadata, patch_os_path_exists):
             chunk_name.with_suffix('.chunk'),
             mock_property
         ]
-
