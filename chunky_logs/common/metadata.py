@@ -100,6 +100,13 @@ class MetaData:
     def chunk_checksum_type(self) -> str:
         return self._metadata[MetaData.CHUNK_CHECKSUM_TYPE_KEY]['value']
 
+    def reload(self):
+        """
+        This will update the metadata data with that stored on disk
+        :return: None
+        """
+        self._metadata = self._load_metadata(self._metadata_file)
+
     def _load_metadata(self, metadata_json_file):
         """
         This method loads the metadata from a given json metadata source file. It will use the _type_schema in order

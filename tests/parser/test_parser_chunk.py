@@ -9,10 +9,10 @@ class TestParserChunk(TestCase):
         group_path = pathlib.PurePosixPath('/tmp/test_group')
         chunk_name = pathlib.PurePosixPath('chunk_1')
 
-        mock_metadata_instance = mock.MagicMock()
-        mock_metadata.return_value = mock_metadata_instance
+        self.mock_metadata_instance = mock.MagicMock()
+        mock_metadata.return_value = self.mock_metadata_instance
 
-        self.metadata_file_patcher = mock.patch.object(mock_metadata_instance, "file", new_callable=mock.PropertyMock)
+        self.metadata_file_patcher = mock.patch.object(self.mock_metadata_instance, "file", new_callable=mock.PropertyMock)
         self.metadata_file_property = self.metadata_file_patcher.start()
         self.metadata_file_property.return_value = 'chunk_1.metadata'
 
@@ -59,3 +59,16 @@ class TestParserChunk(TestCase):
                     mock_chunk_file().seek.assert_called_with(expected_seek_pos)
                 else:
                     mock_chunk_file().seek.assert_not_called()
+
+    def test_has_changed(self):
+        with mock.patch.object(self.mock_metadata_instance, "checksum", new='9256f72dec56351070913a92666bd6ad'):
+            self.test_parser_chunk._current_checksum = '9256f72dec56351070913a92666bd6ad'
+
+            assert False == self.test_parser_chunk.has_changed()
+            self.mock_metadata_instance.reload.assert_not_called()
+
+        with mock.patch.object(self.mock_metadata_instance, "checksum", new='4aceec376e84509844ca378775a18ebb'):
+            self.test_parser_chunk._current_checksum = '9256f72dec56351070913a92666bd6ad'
+
+            assert True == self.test_parser_chunk.has_changed()
+            self.mock_metadata_instance.reload.assert_called_once()
