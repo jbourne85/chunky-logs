@@ -46,7 +46,8 @@ class Chunk:
                 try:
                     self._logger.debug(f"Archiving Chunk file. archive={archive_filename} file={file}")
                     archive.write(file)
+                    os.remove(file)
+                except OSError as e:
+                    raise ChunkManagedFileError(f"Unable to remove managed file: {e}") from None
                 except Exception as e:
-                    raise ChunkManagedFileError(f"Unable to archive managed file: {e}") from None
-
-        self.delete()
+                    raise ChunkManagedFileError(f"Unknown exception when archiving managed file: {e}") from None

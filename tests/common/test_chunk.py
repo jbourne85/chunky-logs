@@ -57,7 +57,8 @@ class TestChunk(TestCase):
 
     @mock.patch('zipfile.ZipFile.__init__')
     @mock.patch('zipfile.ZipFile.write')
-    def test_archive_success(self, patch_zip_file_write, patch_zip_file_init):
+    @mock.patch('os.remove')
+    def test_archive_success(self, patch_os_remove, patch_zip_file_write, patch_zip_file_init):
         self.test_chunk._managed_files = [
             'managed_file_1',
             'managed_file_2',
@@ -65,22 +66,24 @@ class TestChunk(TestCase):
         ]
 
         patch_zip_file_init.return_value = None
+        self.test_chunk.archive()
 
-        with mock.patch.object(self.test_chunk, 'delete') as mock_chunk_delete:
-            self.test_chunk.archive()
+        patch_zip_file_init.assert_called_once_with(pathlib.PurePosixPath('/tmp/test_group/chunk_1.zip'), 'w')
 
-            patch_zip_file_init.assert_called_once_with(pathlib.PurePosixPath('/tmp/test_group/chunk_1.zip'), 'w')
+        assert patch_zip_file_write.call_count == 3
+        patch_zip_file_write.assert_any_call('managed_file_1')
+        patch_zip_file_write.assert_any_call('managed_file_2')
+        patch_zip_file_write.assert_any_call('managed_file_3')
 
-            assert patch_zip_file_write.call_count == 3
-            patch_zip_file_write.assert_any_call('managed_file_1')
-            patch_zip_file_write.assert_any_call('managed_file_2')
-            patch_zip_file_write.assert_any_call('managed_file_3')
-
-            mock_chunk_delete.assert_called_once()
+        assert patch_os_remove.call_count == 3
+        patch_os_remove.assert_any_call('managed_file_1')
+        patch_os_remove.assert_any_call('managed_file_2')
+        patch_os_remove.assert_any_call('managed_file_3')
 
     @mock.patch('zipfile.ZipFile.__init__')
     @mock.patch('zipfile.ZipFile.write')
-    def test_archive_failure(self, patch_zip_file_write, patch_zip_file_init):
+    @mock.patch('os.remove')
+    def test_archive_failure(self, patch_os_remove, patch_zip_file_write, patch_zip_file_init):
         self.test_chunk._managed_files = [
             'managed_file_1',
             'managed_file_2',
@@ -90,12 +93,10 @@ class TestChunk(TestCase):
         patch_zip_file_init.return_value = None
         patch_zip_file_write.side_effect=OSError("Unable to create archive")
 
-        with mock.patch.object(self.test_chunk, 'delete') as mock_chunk_delete:
-            with pytest.raises(ChunkManagedFileError):
-                self.test_chunk.archive()
+        with pytest.raises(ChunkManagedFileError):
+            self.test_chunk.archive()
 
-                patch_zip_file_init.assert_called_once_with(pathlib.PurePosixPath('/tmp/test_group/chunk_1.zip'), 'w')
+        patch_zip_file_init.assert_called_once_with(pathlib.PurePosixPath('/tmp/test_group/chunk_1.zip'), 'w')
 
-                assert patch_zip_file_write.call_count == 0
-
-                mock_chunk_delete.assert_never_called()
+        assert patch_zip_file_write.call_count == 1
+        assert patch_os_remove.call_count == 0
