@@ -4,7 +4,7 @@ import pathlib
 from zipfile import ZipFile
 from chunky_logs.common.metadata import MetaData
 
-class ChunkManagedFileError(OSError):
+class ChunkManagedFileError(RuntimeError):
     pass
 
 class Chunk:
@@ -43,7 +43,10 @@ class Chunk:
         archive_filename = self._group_path.joinpath(self._chunk_name.with_suffix(Chunk.CHUNK_ZIP_EXTENSION))
         with ZipFile(archive_filename, 'w') as archive:
             for file in self._managed_files:
-                self._logger.debug(f"Archiving Chunk file. archive={archive_filename} file={file}")
-                archive.write(file)
+                try:
+                    self._logger.debug(f"Archiving Chunk file. archive={archive_filename} file={file}")
+                    archive.write(file)
+                except Exception as e:
+                    raise ChunkManagedFileError(f"Unable to archive managed file: {e}") from None
 
         self.delete()
