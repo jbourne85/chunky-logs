@@ -1,7 +1,7 @@
 import json
 import logging
-import os
 import pathlib
+from chunky_logs.common.hashing import file_md5sum
 
 class MetaDataError(RuntimeError):
     pass
@@ -17,11 +17,11 @@ class MetaData:
     This class represents the metadata associated with a Chunk file, it knows how to load them from disk
     """
     CHUNK_FILENAME_KEY = 'chunk.file'
-    TIME_CREATE_KEY = 'time.create'
-    TIME_UPDATE_KEY = 'time.update'
-    LINE_COUNT_KEY = 'line.count'
-    CHECKSUM_HASH_KEY = 'checksum.hash'
-    CHECKSUM_TYPE_KEY = 'checksum.type'
+    CHUNK_TIME_CREATE_KEY = 'chunk.time.create'
+    CHUNK_TIME_UPDATE_KEY = 'chunk.time.update'
+    CHUNK_LINE_COUNT_KEY = 'chunk.line.count'
+    CHUNK_CHECKSUM_HASH_KEY = 'chunk.checksum.hash'
+    CHUNK_CHECKSUM_TYPE_KEY = 'chunk.checksum.type'
     METADATA_FILE_EXTENSION = '.metadata.json'
 
     def __init__(self, chunk_file: pathlib.Path):
@@ -29,11 +29,11 @@ class MetaData:
 
         self._default_keys = [
             MetaData.CHUNK_FILENAME_KEY,
-            MetaData.TIME_CREATE_KEY,
-            MetaData.TIME_UPDATE_KEY,
-            MetaData.LINE_COUNT_KEY,
-            MetaData.CHECKSUM_HASH_KEY,
-            MetaData.CHECKSUM_TYPE_KEY
+            MetaData.CHUNK_TIME_CREATE_KEY,
+            MetaData.CHUNK_TIME_UPDATE_KEY,
+            MetaData.CHUNK_LINE_COUNT_KEY,
+            MetaData.CHUNK_CHECKSUM_HASH_KEY,
+            MetaData.CHUNK_CHECKSUM_TYPE_KEY
         ]
 
         self._type_schema = {
@@ -73,28 +73,28 @@ class MetaData:
 
     @property
     @_data_key_exception
-    def time_create(self) -> int:
-        return self._metadata[MetaData.TIME_CREATE_KEY]['value']
+    def chunk_time_create(self) -> int:
+        return self._metadata[MetaData.CHUNK_TIME_CREATE_KEY]['value']
 
     @property
     @_data_key_exception
-    def time_update(self) -> int:
-        return self._metadata[MetaData.TIME_UPDATE_KEY]['value']
+    def chunk_time_update(self) -> int:
+        return self._metadata[MetaData.CHUNK_TIME_UPDATE_KEY]['value']
 
     @property
     @_data_key_exception
-    def line_count(self) -> int:
-        return self._metadata[MetaData.LINE_COUNT_KEY]['value']
+    def chunk_line_count(self) -> int:
+        return self._metadata[MetaData.CHUNK_LINE_COUNT_KEY]['value']
 
     @property
     @_data_key_exception
-    def checksum_hash(self) -> str:
-        return self._metadata[MetaData.CHECKSUM_HASH_KEY]['value']
+    def chunk_checksum_hash(self) -> str:
+        return self._metadata[MetaData.CHUNK_CHECKSUM_HASH_KEY]['value']
 
     @property
     @_data_key_exception
-    def checksum_type(self) -> str:
-        return self._metadata[MetaData.CHECKSUM_TYPE_KEY]['value']
+    def chunk_checksum_type(self) -> str:
+        return self._metadata[MetaData.CHUNK_CHECKSUM_TYPE_KEY]['value']
 
     def _load_metadata(self, metadata_json_file):
         """
@@ -118,3 +118,4 @@ class MetaData:
         else:
             missing_keys = [metadata_key for metadata_key in self._default_keys if metadata_key not in metadata_json]
             raise MetaDataError(f"Missing metadata key(s) {', '.join(missing_keys)})")
+

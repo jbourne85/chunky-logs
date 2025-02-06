@@ -16,23 +16,23 @@ def test_load_metadata_success(patch_builtins_open, patch_os_path_exists):
             'value': chunk_filename,
             'type': 'path'
         },
-        'time.create': {
+        'chunk.time.create': {
             'value': '1648829317',
             'type': 'int'
         },
-        'time.update': {
+        'chunk.time.update': {
             'value': '1648915726',
             'type': 'int'
         },
-        'line.count': {
+        'chunk.line.count': {
             'value': '1440',
             'type': 'int'
         },
-        'checksum.hash': {
+        'chunk.checksum.hash': {
             'value': 'xliyudtn3e',
             'type': 'str'
         },
-        'checksum.type': {
+        'chunk.checksum.type': {
             'value': 'md5',
             'type': 'str'
         },
@@ -52,11 +52,11 @@ def test_load_metadata_success(patch_builtins_open, patch_os_path_exists):
         # Assert the default metadata
         assert test_metadata.file == pathlib.Path(chunk_filename).with_suffix('.metadata.json')
         assert pathlib.Path(test_metadata.chunk_file) == chunk_filename
-        assert test_metadata.time_create == 1648829317
-        assert test_metadata.time_update == 1648915726
-        assert test_metadata.line_count == 1440
-        assert test_metadata.checksum_hash == "xliyudtn3e"
-        assert test_metadata.checksum_type == "md5"
+        assert test_metadata.chunk_time_create == 1648829317
+        assert test_metadata.chunk_time_update == 1648915726
+        assert test_metadata.chunk_line_count == 1440
+        assert test_metadata.chunk_checksum_hash == "xliyudtn3e"
+        assert test_metadata.chunk_checksum_type == "md5"
 
         # Assert the extra custom metadata
         assert test_metadata['data.start'] == 1652334530
@@ -77,19 +77,19 @@ def test_metadata_key_exceptions():
             test_metadata.chunk_file
 
         with pytest.raises(MetaDataKeyError):
-            test_metadata.time_create
+            test_metadata.chunk_time_create
 
         with pytest.raises(MetaDataKeyError):
-            test_metadata.time_update
+            test_metadata.chunk_time_update
 
         with pytest.raises(MetaDataKeyError):
-            test_metadata.line_count
+            test_metadata.chunk_line_count
 
         with pytest.raises(MetaDataKeyError):
-            test_metadata.checksum_hash
+            test_metadata.chunk_checksum_hash
 
         with pytest.raises(MetaDataKeyError):
-            test_metadata.checksum_type
+            test_metadata.chunk_checksum_type
 
         with pytest.raises(MetaDataKeyError):
             test_metadata['nonexistent-key']
