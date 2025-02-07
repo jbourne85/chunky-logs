@@ -15,11 +15,11 @@ class ParserChunk(Chunk):
         self._chunk_pos = None
         self._current_checksum = self.metadata.checksum
 
-    def read(self):
+    def read_line(self):
         """
-        This reads the latest line from the chunk file being followed by this instance of the Parser Chunk.
-        It should always be able to read the next line after it was last read
-        :return: The line read on success
+        This will read a chunk file one line at a time. Repeated calls will continue to read from the last line read,
+        this should allow clients to ingest the whole file one line at a time
+        :return: The line read on success, once the end of the file is reached it will return None
         """
         try:
             with open(self._chunk_file, 'r') as chunk_data:

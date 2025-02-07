@@ -51,7 +51,7 @@ class TestParserChunk(TestCase):
                 mock_chunk_file.return_value.tell.return_value = tell_pos
 
                 # Check that the correct line is read, and that the position in the chunk is updated
-                assert line_data == self.test_parser_chunk.read()
+                assert line_data == self.test_parser_chunk.read_line()
                 assert tell_pos == self.test_parser_chunk._chunk_pos
 
                 # Check that the seek is called starting after the first call
