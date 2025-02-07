@@ -1,4 +1,3 @@
-import io
 import linecache
 import logging
 import pathlib
