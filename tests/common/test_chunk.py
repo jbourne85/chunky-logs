@@ -21,6 +21,9 @@ class TestChunk(TestCase):
         self.metadata_file_patcher.stop()
 
     def test_constructor(self):
+        """
+        Tests the Chunk constructor, and tests the list of managed files are correct
+        """
         assert self.test_chunk._managed_files == [
             pathlib.PurePosixPath('/tmp/test_group/chunk_1.chunk'),
             self.metadata_file_property
@@ -28,6 +31,9 @@ class TestChunk(TestCase):
 
     @mock.patch('os.remove')
     def test_delete_success(self, patch_os_remove):
+        """
+        Tests the success case for Chunk.delete(), and that all managed files are requested to be removed
+        """
         self.test_chunk._managed_files = [
             'managed_file_1',
             'managed_file_2',
@@ -43,6 +49,9 @@ class TestChunk(TestCase):
 
     @mock.patch('os.remove')
     def test_delete_failure(self, patch_os_remove):
+        """
+        Tests the failure case for Chunk.delete(), and that an exception is raised
+        """
         self.test_chunk._managed_files = [
             'managed_file_1',
             'managed_file_2',
@@ -58,6 +67,9 @@ class TestChunk(TestCase):
     @mock.patch('zipfile.ZipFile.write')
     @mock.patch('os.remove')
     def test_archive_success(self, patch_os_remove, patch_zip_file_write, patch_zip_file_init):
+        """
+        Tests the success case for Chunk.archive(), and that all managed files are archived and then removed
+        """
         self.test_chunk._managed_files = [
             'managed_file_1',
             'managed_file_2',
@@ -83,6 +95,9 @@ class TestChunk(TestCase):
     @mock.patch('zipfile.ZipFile.write')
     @mock.patch('os.remove')
     def test_archive_failure(self, patch_os_remove, patch_zip_file_write, patch_zip_file_init):
+        """
+        Tests the failure case for Chunk.archive(), and that an exception is raised and no files are removed
+        """
         self.test_chunk._managed_files = [
             'managed_file_1',
             'managed_file_2',
