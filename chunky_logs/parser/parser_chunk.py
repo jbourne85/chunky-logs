@@ -60,15 +60,15 @@ class ParserChunk(Chunk):
         return lines
 
     def has_changed(self):
-        """
-        This will use the checksum of the metadata file to decide if the chunk has been updated, this is lighter weight
-        than relying on the checksum of the chunk file as it will most likely be magnitudes smaller
-        :return: True if the metadata changes (indicating there is new data to parse in the chunk), False if not
-        """
-        current_checksum = self.metadata.checksum
-        if current_checksum != self._current_checksum:
-            self._logger.debug(f"Metadata file has been updated, reloading.")
-            self.metadata.reload()
-            self._current_checksum = current_checksum
-            return True
-        return False
+            """
+            This will use the checksum of the metadata file to decide if the chunk has been updated, this is lighter weight
+            than relying on the checksum of the chunk file as it will most likely be magnitudes smaller
+            :return: True if the metadata changes (indicating there is new data to parse in the chunk), False if not
+            """
+            current_checksum = self.metadata.checksum
+            if current_checksum != self._current_checksum:
+                self._logger.debug(f"Metadata file has been updated, reloading.")
+                self.metadata.reload()
+                self._current_checksum = current_checksum
+                return True
+            return False
