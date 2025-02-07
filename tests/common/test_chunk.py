@@ -1,7 +1,7 @@
 from unittest import mock, TestCase
 import pathlib
 import pytest
-from chunky_logs.common.chunk import Chunk, ChunkManagedFileError
+from chunky_logs.common import Chunk, ChunkManagedFileError
 
 class TestChunk(TestCase):
     @mock.patch("chunky_logs.common.chunk.MetaData")

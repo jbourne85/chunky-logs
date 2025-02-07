@@ -1,7 +1,7 @@
 import pathlib
 import pytest
 from unittest import mock
-from chunky_logs.author.author_metadata import AuthorMetaData
+from chunky_logs.author import AuthorMetaData
 
 @mock.patch('os.path.exists')
 @mock.patch('builtins.open')

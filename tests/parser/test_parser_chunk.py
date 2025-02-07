@@ -3,7 +3,7 @@ import pytest
 import shutil
 import tempfile
 from unittest import mock, TestCase
-from chunky_logs.parser.parser_chunk import ParserChunk
+from chunky_logs.parser import ParserChunk
 
 class TestParserChunk(TestCase):
     @mock.patch("chunky_logs.parser.parser_chunk.MetaData")

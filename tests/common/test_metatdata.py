@@ -2,7 +2,7 @@ import tempfile
 from unittest import mock
 import pathlib
 import pytest
-from chunky_logs.common.metadata import MetaData, MetaDataKeyError
+from chunky_logs.common import MetaData, MetaDataKeyError
 
 @mock.patch('os.path.exists')
 @mock.patch('builtins.open')
