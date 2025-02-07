@@ -1,4 +1,3 @@
-import tempfile
 from unittest import mock
 import pathlib
 import pytest
@@ -7,6 +6,9 @@ from chunky_logs.common import MetaData, MetaDataKeyError
 @mock.patch('os.path.exists')
 @mock.patch('builtins.open')
 def test_load_metadata_success(patch_builtins_open, patch_os_path_exists):
+    """
+    This will test that when a metadata file exists that the json is correctly loaded and parsed
+    """
     patch_os_path_exists.return_value = True
     mock_data = {
         'chunk.file': {
@@ -64,6 +66,9 @@ def test_load_metadata_success(patch_builtins_open, patch_os_path_exists):
 
 @mock.patch('os.path.exists')
 def test_load_metadata_default_data(patch_os_path_exists):
+    """
+    This will test that when a metadata file does not exist then default values are set
+    """
     patch_os_path_exists.return_value = False
     group_path = pathlib.PurePosixPath('/tmp/test_group')
     chunk_name = pathlib.PurePosixPath('chunk_1')
@@ -78,6 +83,9 @@ def test_load_metadata_default_data(patch_os_path_exists):
     assert test_metadata.chunk_checksum_type == "md5"
 
 def test_metadata_key_exceptions():
+    """
+    This will test that when accessing a non-existent metadata key an exception is raised
+    """
     group_path = pathlib.PurePosixPath('/tmp/test_group')
     chunk_name = pathlib.PurePosixPath('chunk_1')
 
