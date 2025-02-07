@@ -48,9 +48,10 @@ class ParserChunk(Chunk):
         line_count = min(line_count, self.metadata.chunk_line_count)
         lines = []
         try:
-            with open(self._chunk_file, 'r') as chunk_data:
-                for n in range(0, line_count):
-                    lines.append(chunk_data.readline().strip())
+            read_line = 1
+            while len(lines) < line_count:
+                lines.append(linecache.getline(str(self._chunk_file), read_line).strip())
+                read_line += 1
         except FileNotFoundError as e:
             raise ParserChunkManagedFileError(f"Chunk file not found: {e}") from None
         except Exception as e:
