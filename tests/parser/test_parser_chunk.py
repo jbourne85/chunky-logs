@@ -61,14 +61,15 @@ class TestParserChunk(TestCase):
             "line2",
             "line3",
             "line4",
-            "line5"
+            "line5",
+            ""
         ]
         self.set_test_chunk_file_contents(test_data_lines)
 
         with mock.patch.object(self.mock_metadata_instance, "chunk_line_count", new=5):
-            self.assertEquals('line1', self.test_parser_chunk.head())
+            self.assertEqual('line1', self.test_parser_chunk.head())
             self.assertListEqual(test_data_lines[0:3], self.test_parser_chunk.head(3))
-            self.assertListEqual(test_data_lines[0:], self.test_parser_chunk.head(100))
+            self.assertListEqual(test_data_lines[0:-1], self.test_parser_chunk.head(100))
 
     def test_tail(self):
         test_data_lines = [
@@ -81,6 +82,6 @@ class TestParserChunk(TestCase):
         ]
         self.set_test_chunk_file_contents(test_data_lines)
         with mock.patch.object(self.mock_metadata_instance, "chunk_line_count", new=5):
-            self.assertEquals('line5', self.test_parser_chunk.tail())
+            self.assertEqual('line5', self.test_parser_chunk.tail())
             self.assertListEqual(test_data_lines[2:-1], self.test_parser_chunk.tail(3))
             self.assertListEqual(test_data_lines[0:-1], self.test_parser_chunk.tail(100))
