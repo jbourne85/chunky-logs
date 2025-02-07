@@ -3,13 +3,13 @@ import pathlib
 import json
 from chunky_logs.common.metadata import MetaData, MetaDataError
 
-class StreamerMetaDataError(MetaDataError):
+class AuthorMetaDataError(MetaDataError):
     pass
 
-class StreamerMetaDataFileNotFound(MetaDataError):
+class AuthorMetaDataFileNotFound(MetaDataError):
     pass
 
-class StreamerMetaData(MetaData):
+class AuthorMetaData(MetaData):
     def __init__(self, group_path: pathlib.Path, chunk_name: pathlib.Path):
         self._logger = logging.getLogger(self.__class__.__name__)
         super().__init__(group_path, chunk_name)
@@ -26,7 +26,7 @@ class StreamerMetaData(MetaData):
         :param metadata_type: The value type (as defined in the data schema)
         """
         if metadata_type not in self._type_schema:
-            raise StreamerMetaDataError(f"Unknown value type not in schema: {metadata_type}")
+            raise AuthorMetaDataError(f"Unknown value type not in schema: {metadata_type}")
 
         self._metadata[metadata_key] = {
             "value": metadata_value,

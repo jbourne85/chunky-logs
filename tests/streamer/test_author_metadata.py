@@ -1,7 +1,7 @@
 import pathlib
 import pytest
 from unittest import mock
-from chunky_logs.streamer.streamer_metadata import StreamerMetaData
+from chunky_logs.author.author_metadata import AuthorMetaData
 
 @mock.patch('os.path.exists')
 @mock.patch('builtins.open')
@@ -10,7 +10,7 @@ def test_set_default_data(patch_builtins_open, patch_os_path_exists):
     group_path = pathlib.PurePosixPath('/tmp/test_group')
     chunk_name = pathlib.PurePosixPath('chunk_1')
 
-    test_metadata = StreamerMetaData(group_path, chunk_name)
+    test_metadata = AuthorMetaData(group_path, chunk_name)
     test_metadata.chunk_file = pathlib.PurePosixPath('/tmp/test_group/chunk_1.chunk')
     test_metadata.chunk_time_create = 1648829317
     test_metadata.chunk_time_update = 1648915726
