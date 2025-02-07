@@ -1,5 +1,6 @@
 import json
 import logging
+import os.path
 import pathlib
 from chunky_logs.common.hashing import file_md5sum
 
@@ -24,7 +25,7 @@ class MetaData:
     CHUNK_CHECKSUM_TYPE_KEY = 'chunk.checksum.type'
     METADATA_FILE_EXTENSION = '.metadata.json'
 
-    def __init__(self, chunk_file: pathlib.Path):
+    def __init__(self, group_path: pathlib.Path, chunk_name: pathlib.Path):
         self._logger = logging.getLogger(self.__class__.__name__)
 
         self._default_keys = [
@@ -44,8 +45,31 @@ class MetaData:
             'path': pathlib.Path
         }
 
-        self._metadata_file = chunk_file.with_suffix(MetaData.METADATA_FILE_EXTENSION)
-        self._metadata = self._load_metadata(self._metadata_file)
+        self._metadata_file = group_path.joinpath(chunk_name.with_suffix(MetaData.METADATA_FILE_EXTENSION))
+
+        if os.path.exists(self._metadata_file):
+            self.load_from_disk()
+        else:
+            self._metadata = {}
+            self._default_metadata()
+
+    def _default_metadata(self):
+        """
+        This will populate the metadata with default values
+        :param chunk_file: This is the relative path to the chunk file
+        """
+        def add_default_metadata_key(key, value, value_type):
+            self._metadata[key] = {
+                "value": value,
+                "type": value_type
+            }
+
+        add_default_metadata_key(MetaData.CHUNK_FILENAME_KEY, pathlib.Path(''), 'path')
+        add_default_metadata_key(MetaData.CHUNK_TIME_CREATE_KEY, 0, 'int')
+        add_default_metadata_key(MetaData.CHUNK_TIME_UPDATE_KEY, 0, 'int')
+        add_default_metadata_key(MetaData.CHUNK_LINE_COUNT_KEY, 0, 'int')
+        add_default_metadata_key(MetaData.CHUNK_CHECKSUM_HASH_KEY, '', 'str')
+        add_default_metadata_key(MetaData.CHUNK_CHECKSUM_TYPE_KEY, 'md5', 'str')
 
     def _data_key_exception(self):
         def _property_exception_f(*args):
@@ -71,36 +95,30 @@ class MetaData:
         return self._metadata_file
 
     @property
-    @_data_key_exception
     def chunk_file(self) -> pathlib.Path:
         return self._metadata[MetaData.CHUNK_FILENAME_KEY]['value']
 
     @property
-    @_data_key_exception
     def chunk_time_create(self) -> int:
         return self._metadata[MetaData.CHUNK_TIME_CREATE_KEY]['value']
 
     @property
-    @_data_key_exception
     def chunk_time_update(self) -> int:
         return self._metadata[MetaData.CHUNK_TIME_UPDATE_KEY]['value']
 
     @property
-    @_data_key_exception
     def chunk_line_count(self) -> int:
         return self._metadata[MetaData.CHUNK_LINE_COUNT_KEY]['value']
 
     @property
-    @_data_key_exception
     def chunk_checksum_hash(self) -> str:
         return self._metadata[MetaData.CHUNK_CHECKSUM_HASH_KEY]['value']
 
     @property
-    @_data_key_exception
     def chunk_checksum_type(self) -> str:
         return self._metadata[MetaData.CHUNK_CHECKSUM_TYPE_KEY]['value']
 
-    def reload(self):
+    def load_from_disk(self):
         """
         This will update the metadata data with that stored on disk
         :return: None
@@ -129,4 +147,3 @@ class MetaData:
         else:
             missing_keys = [metadata_key for metadata_key in self._default_keys if metadata_key not in metadata_json]
             raise MetaDataError(f"Missing metadata key(s) {', '.join(missing_keys)})")
-

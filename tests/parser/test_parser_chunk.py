@@ -6,7 +6,7 @@ from unittest import mock, TestCase
 from chunky_logs.parser.parser_chunk import ParserChunk
 
 class TestParserChunk(TestCase):
-    @mock.patch("chunky_logs.common.chunk.MetaData")
+    @mock.patch("chunky_logs.parser.parser_chunk.MetaData")
     def setUp(self, mock_metadata):
         self.test_data_directory = tempfile.mkdtemp()
         group_path = pathlib.PurePosixPath(self.test_data_directory)
@@ -18,6 +18,9 @@ class TestParserChunk(TestCase):
         self.metadata_file_patcher = mock.patch.object(self.mock_metadata_instance, "file", new='chunk_1.metadata')
         self.metadata_file_property = self.metadata_file_patcher.start()
 
+        self.metadata_checksum_patcher = mock.patch.object(self.mock_metadata_instance, "checksum", new='9256f72dec56351070913a92666bd6ad')
+        self.metadata_checksum_property = self.metadata_checksum_patcher.start()
+
         self.test_parser_chunk = ParserChunk(group_path, chunk_name)
 
     def set_test_chunk_file_contents(self, file_contents):
@@ -26,6 +29,7 @@ class TestParserChunk(TestCase):
 
     def tearDown(self):
         self.metadata_file_patcher.stop()
+        self.metadata_checksum_patcher.stop()
         shutil.rmtree(self.test_data_directory)
 
     def test_read_success(self):
@@ -43,17 +47,15 @@ class TestParserChunk(TestCase):
             assert line_data == self.test_parser_chunk.read_line()
 
     def test_has_changed(self):
-        with mock.patch.object(self.mock_metadata_instance, "checksum", new='9256f72dec56351070913a92666bd6ad'):
-            self.test_parser_chunk._current_checksum = '9256f72dec56351070913a92666bd6ad'
+        self.test_parser_chunk._current_checksum = '9256f72dec56351070913a92666bd6ad'
 
-            assert False == self.test_parser_chunk.has_changed()
-            self.mock_metadata_instance.reload.assert_not_called()
+        assert False == self.test_parser_chunk.has_changed()
+        self.mock_metadata_instance.reload.assert_not_called()
 
-        with mock.patch.object(self.mock_metadata_instance, "checksum", new='4aceec376e84509844ca378775a18ebb'):
-            self.test_parser_chunk._current_checksum = '9256f72dec56351070913a92666bd6ad'
+        self.test_parser_chunk._current_checksum = '4aceec376e84509844ca378775a18ebb'
 
-            assert True == self.test_parser_chunk.has_changed()
-            self.mock_metadata_instance.reload.assert_called_once()
+        assert True == self.test_parser_chunk.has_changed()
+        self.mock_metadata_instance.reload.assert_called_once()
 
     def test_head(self):
         test_data_lines = [

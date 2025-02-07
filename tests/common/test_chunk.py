@@ -10,13 +10,12 @@ class TestChunk(TestCase):
         chunk_name = pathlib.PurePosixPath('chunk_1')
 
         mock_metadata_instance = mock.MagicMock()
-        mock_metadata.return_value = mock_metadata_instance
 
         self.metadata_file_patcher = mock.patch.object(mock_metadata_instance, "file", new_callable=mock.PropertyMock)
         self.metadata_file_property = self.metadata_file_patcher.start()
         self.metadata_file_property.return_value = 'chunk_1.metadata'
 
-        self.test_chunk = Chunk(group_path, chunk_name)
+        self.test_chunk = Chunk(group_path, chunk_name, mock_metadata_instance)
 
     def tearDown(self):
         self.metadata_file_patcher.stop()

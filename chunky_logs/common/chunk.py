@@ -11,13 +11,12 @@ class Chunk:
     CHUNK_FILE_EXTENSION = '.chunk'
     CHUNK_ZIP_EXTENSION = '.zip'
 
-    def __init__(self, group_path: pathlib.Path, chunk_name: pathlib.Path):
+    def __init__(self, group_path: pathlib.Path, chunk_name: pathlib.Path, metadata: MetaData):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._group_path = group_path
         self._chunk_name = chunk_name
         self._chunk_file = self._group_path.joinpath(self._chunk_name.with_suffix(Chunk.CHUNK_FILE_EXTENSION))
-
-        self.metadata = MetaData(self._chunk_file)
+        self.metadata = metadata
 
         self._managed_files = [
             self._chunk_file,

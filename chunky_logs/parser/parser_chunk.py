@@ -2,6 +2,7 @@ import linecache
 import logging
 import pathlib
 from chunky_logs.common.chunk import Chunk, ChunkManagedFileError
+from chunky_logs.common.chunk import MetaData
 
 class ParserChunkManagedFileError(ChunkManagedFileError):
     pass
@@ -14,7 +15,7 @@ class ParserChunk(Chunk):
     This class knows how to parse and read a existing Chunk file
     """
     def __init__(self, group_path: pathlib.Path, chunk_name: pathlib.Path):
-        super().__init__(group_path, chunk_name)
+        super().__init__(group_path, chunk_name, MetaData(group_path, chunk_name))
         self._logger = logging.getLogger(self.__class__.__name__)
         self._chunk_pos = None
         self._current_checksum = self.metadata.checksum
