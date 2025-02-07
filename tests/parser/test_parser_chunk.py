@@ -72,3 +72,20 @@ class TestParserChunk(TestCase):
 
             assert True == self.test_parser_chunk.has_changed()
             self.mock_metadata_instance.reload.assert_called_once()
+
+    def test_head(self):
+        test_data_lines = [
+            "line1",
+            "line2",
+            "line3",
+            "line4",
+            "line5"
+        ]
+
+        mocked_chunk_file = mock.mock_open(read_data="\n".join(test_data_lines))
+        with mock.patch("builtins.open", mocked_chunk_file):
+            with mock.patch.object(self.mock_metadata_instance, "chunk_line_count", new=5):
+
+                self.assertEquals('line1', self.test_parser_chunk.head())
+                self.assertListEqual(test_data_lines[0:3], self.test_parser_chunk.head(3))
+                self.assertListEqual(test_data_lines[0:], self.test_parser_chunk.head(100))
