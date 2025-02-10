@@ -30,10 +30,13 @@ class AuthorMetaData(MetaData):
         if item.type not in self._type_schema:
             raise AuthorMetaDataError(f"Unknown value type not in schema: {item.type}")
 
-        self._metadata[item.key] = {
-            "value": self._type_schema[item.type](item.value),
-            "type": item.type
-        }
+        try:
+            self._metadata[item.key] = {
+                "value": self._type_schema[item.type](item.value),
+                "type": item.type
+            }
+        except ValueError as e:
+            raise AuthorMetaDataError(f"Mismatch value type vs data schema: key={item.key} value={item.value} type{item.type}") from None
 
         self._logger.debug(f"Added new metadata: key={item.key} value={item.value} type{item.type}")
 
