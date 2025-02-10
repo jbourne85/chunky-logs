@@ -48,7 +48,7 @@ class MetaData:
         self._metadata_file = group_path.joinpath(chunk_name.with_suffix(MetaData.METADATA_FILE_EXTENSION))
 
         if os.path.exists(self._metadata_file):
-            self.load_from_disk()
+            self.read_from_disk()
         else:
             self._metadata = {}
             self._default_metadata()
@@ -118,7 +118,7 @@ class MetaData:
     def chunk_checksum_type(self) -> str:
         return self._metadata[MetaData.CHUNK_CHECKSUM_TYPE_KEY]['value']
 
-    def load_from_disk(self):
+    def read_from_disk(self):
         """
         This will update the metadata data with that stored on disk
         :return: None
