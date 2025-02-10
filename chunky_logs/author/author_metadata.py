@@ -13,6 +13,10 @@ class AuthorMetaDataFileNotFound(MetaDataError):
 AuthorMetaDataItem = namedtuple('MetaDataItem', ['key', 'value', 'type'])
 
 class AuthorMetaData(MetaData):
+    """
+    This represents an Authored Metadata instance, it should support updating and writing out metadata information to
+    disk
+    """
     def __init__(self, group_path: pathlib.Path, chunk_name: pathlib.Path):
         self._logger = logging.getLogger(self.__class__.__name__)
         super().__init__(group_path, chunk_name)
