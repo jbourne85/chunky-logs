@@ -1,3 +1,4 @@
+from collections import namedtuple
 import logging
 import pathlib
 import json
@@ -9,6 +10,8 @@ class AuthorMetaDataError(MetaDataError):
 class AuthorMetaDataFileNotFound(MetaDataError):
     pass
 
+AuthorMetaDataItem = namedtuple('MetaDataItem', ['key', 'value', 'type'])
+
 class AuthorMetaData(MetaData):
     def __init__(self, group_path: pathlib.Path, chunk_name: pathlib.Path):
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -18,22 +21,21 @@ class AuthorMetaData(MetaData):
     def __setitem__(self, key, value):
         self._metadata[key]['value'] = value
 
-    def add(self, metadata_key, metadata_value, metadata_type):
+    def add(self, item: AuthorMetaDataItem):
         """
-        Adds a new metadata value
-        :param metadata_key: The key to reference the metadata by
-        :param metadata_value: The value of the metadata
-        :param metadata_type: The value type (as defined in the data schema)
+        Adds a new metadata value, using the AuthorMetaDataItem tuple. It will also
+        ensure that the data is converted to the correct type
+        :param item: This is the MetaDataItem representing the new metadata item to add
         """
-        if metadata_type not in self._type_schema:
-            raise AuthorMetaDataError(f"Unknown value type not in schema: {metadata_type}")
+        if item.type not in self._type_schema:
+            raise AuthorMetaDataError(f"Unknown value type not in schema: {item.type}")
 
-        self._metadata[metadata_key] = {
-            "value": metadata_value,
-            "type": metadata_type
+        self._metadata[item.key] = {
+            "value": self._type_schema[item.type](item.value),
+            "type": item.type
         }
 
-        self._logger.debug(f"Added new metadata: key={metadata_key} value={metadata_value} type{metadata_type}")
+        self._logger.debug(f"Added new metadata: key={item.key} value={item.value} type{item.type}")
 
     @MetaData.chunk_file.setter
     def chunk_file(self, chunk_file: pathlib.Path):
