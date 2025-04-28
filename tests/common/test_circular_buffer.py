@@ -28,6 +28,7 @@ def test_circular_buffer():
 
     for i in range(1, 11):  # Add 1 -> 9 into the buffer (filling it)
         buffer.push(i)
+        assert buffer.tail() == i
 
     # Assert the buffer status
     assert buffer.length() == capacity
