@@ -109,8 +109,7 @@ class CircularBuffer:
 
     def __iter__(self):
         """
-        Implement the __iter__ magic method so the class can be iteratoed over
-        :return:
+        Implement the __iter__ magic method so the class can be iterated over
         """
         for elem in self._data:
             yield elem

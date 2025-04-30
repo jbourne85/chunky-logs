@@ -30,17 +30,14 @@ class Group:
 
     def __iter__(self):
         """
-        Allows class to be iterable
-        :return:
+        Implement the __iter__ magic method so the class can be iterated over
         """
         for chunk in self._chunks:
             yield chunk
 
     def __getitem__(self, index: int):
         """
-        This will allow clients of this class to iterate over a set of chunks that are currently loaded
-        :param index: This is the index of the chunk to get
-        :return: The chunk
+        Implement the __getitem__ magic method so the class can be accessed like an array
         """
         return self._chunks[index]
 
