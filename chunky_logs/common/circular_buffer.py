@@ -96,13 +96,21 @@ class CircularBuffer:
     @_unknown_index_exception
     def __getitem__(self, index):
         """
-        Implement the __getitem__ magic method so the class can be treated like an array
+        Implement the __getitem__ magic method so the class can be accessed like an array
         """
         return self._data[index]
 
     @_unknown_index_exception
     def __setitem__(self, index, value):
         """
-        Implement the __setitem__ magic method so the class can be treated like an array
+        Implement the __setitem__ magic method so the class can be accessed like an array
         """
         self._data[index] = value
+
+    def __iter__(self):
+        """
+        Implement the __iter__ magic method so the class can be iteratoed over
+        :return:
+        """
+        for elem in self._data:
+            yield elem

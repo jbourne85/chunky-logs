@@ -52,3 +52,5 @@ def test_circular_buffer():
 
     for i in range(1, 11): # Assert the values in the buffer
         assert buffer[i - 1] == i + capacity
+
+    assert len(list(buffer)) == capacity
